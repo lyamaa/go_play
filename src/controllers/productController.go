@@ -14,3 +14,15 @@ func Products(c *fiber.Ctx) error {
 
 	return c.JSON(products)
 }
+
+func CreateProduct(c *fiber.Ctx) error {
+	var products models.Product
+
+	if err := c.BodyParser(&products); err != nil {
+		return err
+	}
+
+	database.DB.Create(&products)
+
+	return c.JSON(products)
+}
