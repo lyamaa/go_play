@@ -1,9 +1,36 @@
 package controllers
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"admin/src/database"
+	"admin/src/models"
+
+	"github.com/gofiber/fiber/v2"
+)
 
 func Register(c *fiber.Ctx) error {
-	return c.JSON(fiber.Map{
-		"message": "K xa!",
-	})
+
+	var data map[string]string
+
+	if err := c.BodyParser(&data); err != nil {
+		return err
+	}
+
+	if data["password"] != data["password_confirm"] {
+		c.Status(400)
+		return c.JSON(fiber.Map{
+			"message": "Password does not match",
+		})
+	}
+
+	user := models.User{
+		FirstName: data["first_name"],
+		LastName:  data["last_name"],
+		Email:     data["email"],
+
+		IsVendor: false,
+	}
+	user.SetPassword(data["password"])
+	database.DB.Create(&user)
+
+	return c.JSON(user)
 }

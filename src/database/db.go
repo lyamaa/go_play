@@ -2,6 +2,7 @@ package database
 
 import (
 	"admin/src/models"
+	"fmt"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -10,10 +11,12 @@ import (
 var DB *gorm.DB
 
 func Connect() {
-	DB, err := gorm.Open(mysql.Open("root:root@tcp(localhost:3306)/root"), &gorm.Config{})
-
+	database, err := gorm.Open(mysql.Open("root:root@/root"), &gorm.Config{})
 	if err != nil {
-		panic(err)
+		panic("Could not connect to the database")
+	} else {
+		fmt.Println("Connecting..... wait!!")
 	}
-	DB.AutoMigrate(models.User{})
+	DB = database
+	database.AutoMigrate(models.User{})
 }
