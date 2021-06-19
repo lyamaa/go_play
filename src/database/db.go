@@ -23,5 +23,5 @@ func Connect() {
 		fmt.Println("Connecting..... wait!!")
 	}
 	DB = database
-	database.AutoMigrate(models.User{})
+	database.AutoMigrate(models.User{}, models.Product{})
 }
