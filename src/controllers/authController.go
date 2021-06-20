@@ -5,6 +5,7 @@ import (
 	"admin/src/middlewares"
 	"admin/src/models"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -31,7 +32,7 @@ func Register(c *fiber.Ctx) error {
 		LastName:  data["last_name"],
 		Email:     data["email"],
 
-		IsVendor: false,
+		IsVendor: strings.Contains(c.Path(), "/api/vendor"),
 	}
 	user.SetPassword(data["password"])
 	database.DB.Create(&user)

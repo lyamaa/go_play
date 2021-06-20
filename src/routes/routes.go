@@ -16,9 +16,9 @@ func Setup(app *fiber.App) {
 	// Middlewares
 	adminAuthenticated := admin.Use(middlewares.IsAuthenticated)
 
-	// AUTH ROUTES
+	// ADMIN AUTH ROUTES
 	adminAuthenticated.Get("user", controllers.User)
-	adminAuthenticated.Get("logout", controllers.Logout)
+	adminAuthenticated.Post("logout", controllers.Logout)
 	adminAuthenticated.Put("users/info", controllers.ProfileUpdateInfo)
 	adminAuthenticated.Put("users/password", controllers.UpdatePassword)
 
@@ -37,4 +37,19 @@ func Setup(app *fiber.App) {
 
 	// Order Routes
 	adminAuthenticated.Get("orders", controllers.Orders)
+
+	// VENDOR
+	vendor := api.Group("vendor")
+	// Vendor auth
+	vendor.Post("register", controllers.Register)
+	vendor.Post("login", controllers.Login)
+
+	vendorAuthenticated := vendor.Use(middlewares.IsAuthenticated)
+
+	// VENDOR AUTH ROUTES
+	vendorAuthenticated.Get("user", controllers.User)
+	vendorAuthenticated.Post("logout", controllers.Logout)
+	vendorAuthenticated.Put("users/info", controllers.ProfileUpdateInfo)
+	vendorAuthenticated.Put("users/password", controllers.UpdatePassword)
+
 }
