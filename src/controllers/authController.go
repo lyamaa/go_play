@@ -108,6 +108,13 @@ func User(c *fiber.Ctx) error {
 
 	database.DB.Where("id=?", id).First(&user)
 
+	if strings.Contains(c.Path(), "/api/vendor") {
+		vendor := models.Vendor(user)
+
+		vendor.CalculateRevenue(database.DB)
+		return c.JSON(vendor)
+	}
+
 	return c.JSON(user)
 }
 
