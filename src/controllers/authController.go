@@ -4,11 +4,9 @@ import (
 	"admin/src/database"
 	"admin/src/middlewares"
 	"admin/src/models"
-	"strconv"
 	"strings"
 	"time"
 
-	"github.com/dgrijalva/jwt-go"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -66,13 +64,21 @@ func Login(c *fiber.Ctx) error {
 			"message": "Invalid Credentials...",
 		})
 	}
+	var scope string
+	isVendor := strings.Contains(c.Path(), "/api/vendor")
 
-	payload := jwt.StandardClaims{
-		Subject:   strconv.Itoa(int(user.Id)),
-		ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),
+	if isVendor {
+		scope = "vendor"
+	} else {
+		scope = "admin"
 	}
-
-	token, err := jwt.NewWithClaims(jwt.SigningMethodHS256, payload).SignedString([]byte("secret"))
+	if !isVendor && user.IsVendor {
+		c.Status(fiber.StatusUnauthorized)
+		return c.JSON(fiber.Map{
+			"message": "unauthorized",
+		})
+	}
+	token, err := middlewares.GenerateJWT(user.Id, scope)
 
 	if err != nil {
 		c.Status(fiber.StatusBadRequest)

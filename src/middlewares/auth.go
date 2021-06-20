@@ -2,6 +2,8 @@ package middlewares
 
 import (
 	"strconv"
+	"strings"
+	"time"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gofiber/fiber/v2"
@@ -28,7 +30,27 @@ func IsAuthenticated(c *fiber.Ctx) error {
 		})
 	}
 
+	payload := token.Claims.(*ClaimsWithScope)
+
+	isVendor := strings.Contains(c.Path(), "/api/vendor")
+
+	if (payload.Scope == "admin" && isVendor) || (payload.Scope == "vendor" && !isVendor) {
+		c.Status(fiber.StatusUnauthorized)
+		return c.JSON(fiber.Map{
+			"mesage": "unauthorized",
+		})
+	}
+
 	return c.Next()
+}
+
+func GenerateJWT(id uint, scope string) (string, error) {
+	payload := ClaimsWithScope{}
+	payload.Subject = strconv.Itoa(int(id))
+	payload.ExpiresAt = time.Now().Add(time.Hour * 24).Unix()
+	payload.Scope = scope
+
+	return jwt.NewWithClaims(jwt.SigningMethodHS256, payload).SignedString([]byte(SecretKey))
 }
 
 func GetUserId(c *fiber.Ctx) (uint, error) {
