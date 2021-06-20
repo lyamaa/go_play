@@ -11,9 +11,16 @@ import (
 func Link(c *fiber.Ctx) error {
 	id, _ := strconv.Atoi(c.Params("id"))
 
-	var link []models.Link
+	var links []models.Link
 
-	database.DB.Where("user_id=?", id).Find(&link)
+	database.DB.Where("user_id=?", id).Find(&links)
 
-	return c.JSON(link)
+	for i, link := range links {
+		var orders []models.Order
+		database.DB.Where("code = ? and complete= true", link.Code).Find(&orders)
+
+		links[i].Orders = orders
+	}
+
+	return c.JSON(links)
 }
