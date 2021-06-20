@@ -55,3 +55,16 @@ func UpdateProduct(c *fiber.Ctx) error {
 
 	return c.JSON(product)
 }
+
+func DeletePRoduct(c *fiber.Ctx) error {
+	id, _ := strconv.Atoi(c.Params("id"))
+
+	product := models.Product{
+		Id: uint(id),
+	}
+
+	database.DB.Model(&product).Delete(&product)
+	return c.JSON(fiber.Map{
+		"message": "product deleted success",
+	})
+}
