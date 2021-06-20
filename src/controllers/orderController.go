@@ -7,7 +7,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func Order(c *fiber.Ctx) error {
+func Orders(c *fiber.Ctx) error {
 	var orders []models.Order
 
 	database.DB.Find(&orders)

@@ -34,4 +34,7 @@ func Setup(app *fiber.App) {
 
 	// Link ROUTE
 	adminAuthenticated.Get("users/:id/links", controllers.Link)
+
+	// Order Routes
+	adminAuthenticated.Get("orders", controllers.Orders)
 }
