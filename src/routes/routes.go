@@ -13,13 +13,21 @@ func Setup(app *fiber.App) {
 	admin.Post("register", controllers.Register)
 	admin.Post("login", controllers.Login)
 
-	// Middleware
+	// Middlewares
 	adminAuthenticated := admin.Use(middlewares.IsAuthenticated)
+
+	// AUTH ROUTES
 	adminAuthenticated.Get("user", controllers.User)
 	adminAuthenticated.Get("logout", controllers.Logout)
 	adminAuthenticated.Put("users/info", controllers.ProfileUpdateInfo)
 	adminAuthenticated.Put("users/password", controllers.UpdatePassword)
+
+	// VENDOR ROUTES
 	adminAuthenticated.Get("vendors", controllers.Vendor)
+
+	// PRODUCT ROUTES
 	adminAuthenticated.Get("products", controllers.Products)
 	adminAuthenticated.Post("products", controllers.CreateProduct)
+	adminAuthenticated.Get("products/:id", controllers.GetProduct)
+	adminAuthenticated.Put("products/:id", controllers.UpdateProduct)
 }
